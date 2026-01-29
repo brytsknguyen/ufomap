@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>ufomap_ros</name>
   <version>1.0.0</version>
-  <description>The ufomap_ros package provides conversion functions between UFOMap and ROS native types</description>
+  <description>
+    The ufomap_ros package provides conversion functions between UFOMap and ROS native types
+  </description>
 
   <author email="dduberg@kth.se">Daniel Duberg</author>
   <maintainer email="dduberg@kth.se">Daniel Duberg</maintainer>
@@ -11,13 +13,21 @@
 
   <url type="website">https://github.com/danielduberg/ufomap_ros</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <!-- Build system -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- ROS 2 message dependencies -->
   <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>ufomap_msgs</depend>
 
-  <build_depend>ufomap</build_depend>
-  
+  <!-- External library -->
+  <depend>ufomap</depend>
+
+  <!-- Documentation -->
   <doc_depend>doxygen</doc_depend>
 
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

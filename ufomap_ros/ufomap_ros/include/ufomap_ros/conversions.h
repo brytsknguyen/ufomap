@@ -42,6 +42,8 @@
 #ifndef UFOMAP_ROS_CONVERSIONS_H
 #define UFOMAP_ROS_CONVERSIONS_H
 
+#include "cstring"
+
 // UFO
 #include <ufo/map/point.h>
 #include <ufo/map/point_cloud.h>
@@ -50,27 +52,27 @@
 #include <ufo/math/vector3.h>
 
 // ROS
-#include <geometry_msgs/Point.h>
-#include <geometry_msgs/Pose.h>
-#include <geometry_msgs/Quaternion.h>
-#include <geometry_msgs/Transform.h>
-#include <geometry_msgs/Vector3.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <sensor_msgs/PointField.h>
-#include <sensor_msgs/point_cloud2_iterator.h>
-#include <sensor_msgs/point_cloud_conversion.h>
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/quaternion.hpp>
+#include <geometry_msgs/msg/transform.hpp>
+#include <geometry_msgs/msg/vector3.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
+#include <sensor_msgs/msg/point_field.hpp>
+#include <sensor_msgs/point_cloud2_iterator.hpp>
+#include <sensor_msgs/point_cloud_conversion.hpp>
 
 // STL
 #include <optional>
 
 namespace ufomap_ros
 {
-std::optional<sensor_msgs::PointField> getField(sensor_msgs::PointCloud2 const& cloud,
-                                                std::string const& field_name);
+std::optional<sensor_msgs::msg::PointField> getField(sensor_msgs::msg::PointCloud2 const& cloud,
+                                                	 std::string const& field_name);
 
 // Point clouds
 template <class P>
-void rosToUfo(sensor_msgs::PointCloud2 const& cloud_in,
+void rosToUfo(sensor_msgs::msg::PointCloud2 const& cloud_in,
               ufo::map::PointCloudT<P>& cloud_out, bool filter_nan = true)
 {
 	if (0 == cloud_in.point_step || 0 == cloud_in.row_step || 0 == cloud_in.height) {
@@ -166,30 +168,30 @@ void rosToUfo(sensor_msgs::PointCloud2 const& cloud_in,
 
 template <class P>
 void ufoToRos(ufo::map::PointCloudT<P> const& cloud_in,
-              sensor_msgs::PointCloud2& cloud_out)
+              sensor_msgs::msg::PointCloud2& cloud_out)
 {
 	sensor_msgs::PointCloud2Modifier cloud_out_modifier(cloud_out);
 	if constexpr (std::is_base_of_v<ufo::map::RGBColor, P> &&
 	              std::is_base_of_v<ufo::map::SemanticPair, P>) {
 		// clang-format off
-		cloud_out_modifier.setPointCloud2Fields(6, 
-														"x",     1, sensor_msgs::PointField::FLOAT32,
-														"y",     1, sensor_msgs::PointField::FLOAT32,
-														"z",     1, sensor_msgs::PointField::FLOAT32,
-														"rgb",   1, sensor_msgs::PointField::UINT32,
-														"label", 1, sensor_msgs::PointField::UINT32,
-														"value", 1, sensor_msgs::PointField::UINT32);
+		cloud_out_modifier.setPointCloud2Fields(6,
+														"x",     1, sensor_msgs::msg::PointField::FLOAT32,
+														"y",     1, sensor_msgs::msg::PointField::FLOAT32,
+														"z",     1, sensor_msgs::msg::PointField::FLOAT32,
+														"rgb",   1, sensor_msgs::msg::PointField::UINT32,
+														"label", 1, sensor_msgs::msg::PointField::UINT32,
+														"value", 1, sensor_msgs::msg::PointField::UINT32);
 		// clang-format on
 	} else if constexpr (std::is_base_of_v<ufo::map::RGBColor, P>) {
 		cloud_out_modifier.setPointCloud2FieldsByString(2, "xyz", "rgb");
 	} else if constexpr (std::is_base_of_v<ufo::map::SemanticPair, P>) {
 		// clang-format off
-			cloud_out_modifier.setPointCloud2Fields(5, 
-                            "x",     1, sensor_msgs::PointField::FLOAT32,
-                            "y",     1, sensor_msgs::PointField::FLOAT32,
-                            "z",     1, sensor_msgs::PointField::FLOAT32,
-                            "label", 1, sensor_msgs::PointField::UINT32,
-                            "value", 1, sensor_msgs::PointField::UINT32);
+			cloud_out_modifier.setPointCloud2Fields(5,
+                            "x",     1, sensor_msgs::msg::PointField::FLOAT32,
+                            "y",     1, sensor_msgs::msg::PointField::FLOAT32,
+                            "z",     1, sensor_msgs::msg::PointField::FLOAT32,
+                            "label", 1, sensor_msgs::msg::PointField::UINT32,
+                            "value", 1, sensor_msgs::msg::PointField::UINT32);
 		// clang-format on
 	} else {
 		cloud_out_modifier.setPointCloud2FieldsByString(1, "xyz");
@@ -233,7 +235,7 @@ void ufoToRos(ufo::map::PointCloudT<P> const& cloud_in,
 
 // Vector3/Point
 template <typename T>
-constexpr void rosToUfo(geometry_msgs::Point const& point_in,
+constexpr void rosToUfo(geometry_msgs::msg::Point const& point_in,
                         ufo::math::Vector3<T>& point_out)
 {
 	point_out.x = point_in.x;
@@ -242,7 +244,7 @@ constexpr void rosToUfo(geometry_msgs::Point const& point_in,
 }
 
 template <typename T>
-constexpr void rosToUfo(geometry_msgs::Vector3 const& point_in,
+constexpr void rosToUfo(geometry_msgs::msg::Vector3 const& point_in,
                         ufo::math::Vector3<T>& point_out)
 {
 	point_out.x = point_in.x;
@@ -250,19 +252,19 @@ constexpr void rosToUfo(geometry_msgs::Vector3 const& point_in,
 	point_out.z = point_in.z;
 }
 
-constexpr ufo::math::Vector3d rosToUfo(geometry_msgs::Point const& point)
+constexpr ufo::math::Vector3d rosToUfo(geometry_msgs::msg::Point const& point)
 {
 	return ufo::math::Vector3d(point.x, point.y, point.z);
 }
 
-constexpr ufo::math::Vector3d rosToUfo(geometry_msgs::Vector3 const& point)
+constexpr ufo::math::Vector3d rosToUfo(geometry_msgs::msg::Vector3 const& point)
 {
 	return ufo::math::Vector3d(point.x, point.y, point.z);
 }
 
 template <typename T>
 constexpr void ufoToRos(ufo::math::Vector3<T> const& point_in,
-                        geometry_msgs::Point& point_out)
+                        geometry_msgs::msg::Point& point_out)
 {
 	point_out.x = point_in.x;
 	point_out.y = point_in.y;
@@ -271,7 +273,7 @@ constexpr void ufoToRos(ufo::math::Vector3<T> const& point_in,
 
 template <typename T>
 constexpr void ufoToRos(ufo::math::Vector3<T> const& point_in,
-                        geometry_msgs::Vector3& point_out)
+                        geometry_msgs::msg::Vector3& point_out)
 {
 	point_out.x = point_in.x;
 	point_out.y = point_in.y;
@@ -288,7 +290,7 @@ constexpr P ufoToRos(ufo::math::Vector3<T> const& point)
 
 // Quaternion
 template <typename T>
-constexpr void rosToUfo(geometry_msgs::Quaternion const& quaternion_in,
+constexpr void rosToUfo(geometry_msgs::msg::Quaternion const& quaternion_in,
                         ufo::math::Quaternion<T>& quaternion_out)
 {
 	quaternion_out.x = quaternion_in.x;
@@ -297,14 +299,14 @@ constexpr void rosToUfo(geometry_msgs::Quaternion const& quaternion_in,
 	quaternion_out.w = quaternion_in.w;
 }
 
-constexpr ufo::math::Quaterniond rosToUfo(geometry_msgs::Quaternion const& quaternion)
+constexpr ufo::math::Quaterniond rosToUfo(geometry_msgs::msg::Quaternion const& quaternion)
 {
 	return ufo::math::Quaterniond(quaternion.w, quaternion.x, quaternion.y, quaternion.z);
 }
 
 template <typename T>
 constexpr void ufoToRos(ufo::math::Quaternion<T> const& quaternion_in,
-                        geometry_msgs::Quaternion& quaternion_out)
+                        geometry_msgs::msg::Quaternion& quaternion_out)
 {
 	quaternion_out.x = quaternion_in.x;
 	quaternion_out.y = quaternion_in.y;
@@ -313,16 +315,16 @@ constexpr void ufoToRos(ufo::math::Quaternion<T> const& quaternion_in,
 }
 
 template <typename T>
-geometry_msgs::Quaternion ufoToRos(ufo::math::Quaternion<T> const& quaternion)
+geometry_msgs::msg::Quaternion ufoToRos(ufo::math::Quaternion<T> const& quaternion)
 {
-	geometry_msgs::Quaternion q;
+	geometry_msgs::msg::Quaternion q;
 	ufoToRos(quaternion, q);
 	return q;
 }
 
 // Transforms/Pose
 template <typename T>
-constexpr void rosToUfo(geometry_msgs::Transform const& transform_in,
+constexpr void rosToUfo(geometry_msgs::msg::Transform const& transform_in,
                         ufo::math::Pose6<T>& transform_out)
 {
 	rosToUfo(transform_in.translation, transform_out.translation);
@@ -330,13 +332,13 @@ constexpr void rosToUfo(geometry_msgs::Transform const& transform_in,
 }
 
 template <typename T>
-constexpr void rosToUfo(geometry_msgs::Pose const& pose_in, ufo::math::Pose6<T>& pose_out)
+constexpr void rosToUfo(geometry_msgs::msg::Pose const& pose_in, ufo::math::Pose6<T>& pose_out)
 {
 	rosToUfo(pose_in.position, pose_out.translation);
 	rosToUfo(pose_in.orientation, pose_out.rotation);
 }
 
-constexpr ufo::math::Pose6d rosToUfo(geometry_msgs::Transform const& transform)
+constexpr ufo::math::Pose6d rosToUfo(geometry_msgs::msg::Transform const& transform)
 {
 	return ufo::math::Pose6d(transform.translation.x, transform.translation.y,
 	                         transform.translation.z, transform.rotation.w,
@@ -344,7 +346,7 @@ constexpr ufo::math::Pose6d rosToUfo(geometry_msgs::Transform const& transform)
 	                         transform.rotation.z);
 }
 
-constexpr ufo::math::Pose6d rosToUfo(geometry_msgs::Pose const& pose)
+constexpr ufo::math::Pose6d rosToUfo(geometry_msgs::msg::Pose const& pose)
 {
 	return ufo::math::Pose6d(pose.position.x, pose.position.y, pose.position.z,
 	                         pose.orientation.w, pose.orientation.x, pose.orientation.y,
@@ -353,14 +355,14 @@ constexpr ufo::math::Pose6d rosToUfo(geometry_msgs::Pose const& pose)
 
 template <typename T>
 constexpr void ufoToRos(ufo::math::Pose6<T> const& transform_in,
-                        geometry_msgs::Transform& transform_out)
+                        geometry_msgs::msg::Transform& transform_out)
 {
 	ufoToRos(transform_in.translation, transform_out.translation);
 	ufoToRos(transform_in.rotation, transform_out.rotation);
 }
 
 template <typename T>
-constexpr void ufoToRos(ufo::math::Pose6<T> const& pose_in, geometry_msgs::Pose& pose_out)
+constexpr void ufoToRos(ufo::math::Pose6<T> const& pose_in, geometry_msgs::msg::Pose& pose_out)
 {
 	ufoToRos(pose_in.translation, pose_out.position);
 	ufoToRos(pose_in.rotation, pose_out.orientation);

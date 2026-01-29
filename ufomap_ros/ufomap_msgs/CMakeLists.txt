@@ -1,39 +1,23 @@
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.8)
 project(ufomap_msgs)
 
-set(CMAKE_CXX_STANDARD 17)
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+find_package(std_msgs REQUIRED)
 
-find_package(catkin REQUIRED COMPONENTS
-  message_generation
-  std_msgs
+# If your msg files depend on other interface packages, list them here too.
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/UFOMap.msg"
+  "msg/UFOMapStamped.msg"
+  DEPENDENCIES std_msgs
 )
 
-find_package(ufomap REQUIRED)
-
-add_message_files(
-  DIRECTORY msg
-  FILES
-    UFOMap.msg
-    UFOMapStamped.msg
-)
-
-generate_messages(
-  DEPENDENCIES
-    std_msgs
-)
-
-
-catkin_package(
-  INCLUDE_DIRS include
-  CATKIN_DEPENDS message_runtime std_msgs
-)
-
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
-
+# If you really have headers under include/ that you want to install:
 install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  DESTINATION include/${PROJECT_NAME}
   FILES_MATCHING PATTERN "*.h"
 )
+
+ament_export_dependencies(rosidl_default_runtime)
+ament_package()

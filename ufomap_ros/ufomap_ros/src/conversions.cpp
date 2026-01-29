@@ -44,11 +44,11 @@
 
 namespace ufomap_ros
 {
-std::optional<sensor_msgs::PointField> getField(sensor_msgs::PointCloud2 const& cloud,
-                                                std::string const& field_name)
+std::optional<sensor_msgs::msg::PointField> getField(sensor_msgs::msg::PointCloud2 const& cloud,
+                                                	 std::string const& field_name)
 {
 	auto idx = sensor_msgs::getPointCloud2FieldIndex(cloud, field_name);
 	return 0 > idx ? std::nullopt
-	               : std::optional<sensor_msgs::PointField>{cloud.fields[idx]};
+	               : std::optional<sensor_msgs::msg::PointField>{cloud.fields[idx]};
 }
 }  // namespace ufomap_ros
